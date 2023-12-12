@@ -1,0 +1,15 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: "first"
+      POSTGRES_USER: "postgre"
+      POSTGRES_PASSWORD: "postgre"
+    volumes:
+      - firstdb-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  firstdb-data:
