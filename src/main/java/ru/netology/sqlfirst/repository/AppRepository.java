@@ -1,10 +1,13 @@
 package ru.netology.sqlfirst.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import jakarta.annotation.PostConstruct;
+import ru.netology.sqlfirst.entity.Customer;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +18,9 @@ import java.util.List;
 public class AppRepository {
     private final String QUERY_RESOURCE_FILE = "select.sql";
     private String query;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     AppRepository(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
@@ -28,8 +34,15 @@ public class AppRepository {
     }
 
     public List<String> getProduct(String name) {
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("name", name);
-        return namedParameterJdbcTemplate.queryForList(query,parameters,String.class);
+        return entityManager
+                .createQuery(query, String.class)
+                .setParameter("name", name)
+                .getResultList();
+    }
+
+    public List<Customer> getAllCustomers() {
+        return entityManager
+                .createQuery("select c from Customer c", Customer.class)
+                .getResultList();
     }
 }
